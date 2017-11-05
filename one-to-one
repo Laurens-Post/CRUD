@@ -1,0 +1,142 @@
+*** Setting up Migrations ***
+
+// Model aanmaken voor migratie
+--- php artisan make:model Address -m
+
+// Toevoegen in migratiebestand (address_table.php)
+$table->string('name'); toevoegen
+
+--- php artisan migrate
+
+// Toevoegen in migratiebestand (address_table.php)
+$table->integer('user_id')->unsigned()->nullable();
+
+// Updaten tabellen
+php artisan migrate:refresh
+
+
+*** Setting up relations ***
+
+// In user model
+public function address() {
+	return $this->hasOne('App\Address');
+}
+
+
+*** Creating data for users ***
+
+// in Routes.php
+use App\User; (bovenaan)
+use App\Address;
+
+Route::get('/insert', function() {
+
+// Vind een gebruiker
+$user = User::findOrFail(1);
+
+// Adres opslaan in een array
+$address = new Address(['name'=>'NHL Hogeschool']);
+
+// Opslaan gegevens
+$user=>address()->($address);
+
+});
+
+// In de database moet een gebruiker aanwezig zijn
+
+// In model Address.php
+protected $fillable = [
+	'name'
+];
+
+* Updating Data *
+
+//in Routes.php
+use App\User; (bovenaan)
+use App\Address;
+
+Route::get('/insert', function() {
+
+// Vind een gebruiker
+$user = User::findOrFail(1);
+
+// Adres opslaan in een array
+$address = new Address(['name'=>'NHL Hogeschool']);
+
+// Opslaan gegevens
+$user=>address()->($address);
+
+});
+
+Route::get('/update', function() {
+
+	// 4 Manieren om de eerste user_id te vinden
+	$address = Address::where('user_id');
+	$address = Address::where('user_id', 1);
+	$address = Address::where('user_id', '=' 1);
+	$address = Address::whereUserId(1)->first();
+
+	// De tabel die geupdate moet worden
+	$address->name = "Address Update";
+
+	// Updaten gegevens
+	$address->save();
+});
+
+
+*** Reading and deleting data ***
+
+// in Routes.php
+use App\User; (bovenaan)
+use App\Address;
+
+Route::get('/insert', function() {
+
+// Vind een gebruiker
+$user = User::findOrFail(1);
+
+// Adres opslaan in een array
+$address = new Address(['name'=>'NHL Hogeschool']);
+
+// Opslaan gegevens
+$user=>address()->($address);
+
+});
+
+Route::get('/update', function() {
+
+	// 4 Manieren om de eerste user_id te vinden
+	$address = Address::where('user_id');
+	$address = Address::where('user_id', 1);
+	$address = Address::where('user_id', '=' 1);
+	$address = Address::whereUserId(1)->first();
+
+	// De tabel die geupdate moet worden
+	$address->name = "Address Update";
+
+	// Updaten gegevens
+	$address->save();
+});
+
+Route::get('/read', function() {
+
+	//Vind de gebruiker
+	$user = User::findOrFail(1);
+	
+	// Print de address table
+	echo $user->address->name;
+
+	return "Verwijderd";
+
+});
+
+Route::get('/delete', function() {
+
+	//Vind de gebruiker
+	$user = User::findOrFail(1);
+	
+	// Verwijder het adres
+	$user->address()->delete();
+
+});
+
