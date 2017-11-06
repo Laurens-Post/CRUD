@@ -3,4 +3,3 @@ Eloquent: Relationships
 - One to Many Relationship
 - Many to Many Relationship
 - Eloquent Polymorphic Relationship
-- Eloquent Polymorphic Many to Many Relationship
