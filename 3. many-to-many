@@ -83,7 +83,7 @@ Route::get('/update', function() {
 			
 			// Als de de rol overeenkomt met Admin verander naar admin
 			if($role->name == 'Admin') {
-				$role->name = "admin"; //functie zoals strtolower kan ook;
+				$role->name = "admin"; //functie zoals strtolower kan ook om te lowercasen;
 
 				$role->save();
 });
@@ -103,11 +103,51 @@ Route::get('/delete', function() {
 	// Loopen door de rollen
 	foreach($user->roles as $role) {
 
-	// 
+	// Output de $role
 	dd($role);
 
 	// Een specifieke Id verwijderen
 	$role->whereId(eenId)->delete();
+
+});
+
+*** Attaching, detaching and syncing ***
+
+// Attaching
+Route::get('/attach', function() {
+
+	// Vind een gebruiker
+	$user = User::findOrFail(1);
+
+	// Koppel een rol aan een gebruiker
+	$user->roles()->attach(een Id);
+
+
+});
+
+// Detaching
+Route::get('/detach', function() {
+
+	// Vind een gebruiker
+	$user = User::findOrFail(1);
+
+	// Ontkoppel een rol aan een gebruiker
+	$user->roles()->detach(een Id);
+	
+	// Zonder Id worden alle rollen verwijderd die gekoppeld zijn.
+	$user->roles()->detach();
+
+});
+
+// Syncing
+
+Route:get('/sync', function() {
+
+	// Vind een gebruiker
+	$user = User::findOrFail(1);
+
+	// Meerdere rollen aanmaken voor gebruikers
+	$user->roles()->sync([1,2,3]);
 
 });
 
