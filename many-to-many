@@ -1,0 +1,113 @@
+
+*** Setting up Migrations ***
+
+--- php artisan make:model Role -m
+--- php artisan make:migration create_role_user_table --create=role_user
+
+// In migration role_user_table.php
+
+	$table->integer('user_id')->unsigned()->nullable()->index();
+	$table->integer('role_id')->unsigned()->nullable()->index();
+
+// in Migration roles_table.php
+	$table->string('name');
+
+--- php artisan migrate
+
+
+*** Relations en mass asignment ***
+
+// in Model User.php
+public function roles() {
+	return $this->belongsToMany('App\Role');
+}
+
+// in Model Role.php
+protected $fillable = ['name'];
+
+
+*** Inserting Data ***
+
+// Gebruiker aanmaken in Database
+// In routes.php
+// Assigning role to a user
+Route::get('/create', function() {
+
+  // Vind gebruiker
+	$user = User::findOrFail(1);
+
+  // Nieuwe rol aanmaken
+	$role = new Role(['name'=>'Admin']);
+
+  // Rol opslaan
+	$user->roles()->save($role);
+
+}
+
+*** Reading Data ***
+
+// in routes.php
+Route::get('/read', function() {
+
+  // Vind eerste gebruiker
+	$user = User::findOrFail(1);
+
+  // Voor elke gebruiker loopen door de rollen
+	foreach($user->roles as $role) {
+	
+	// Data lezen uit user
+	dd($role);
+	// of
+	dd(&user->roles);
+	// lees de rol van name
+	echo $role->name; // Admin
+
+	}
+
+}
+
+
+*** Updating data ***
+
+// In routes.php
+Route::get('/update', function() {
+	
+	// Vind een gebruiker
+	$user = User::findOrFail(1);
+	
+	// Check of een gebruiker rollen heeft
+	if($user->has('roles')) {
+
+		// Loopen door alle rollen van $user
+		foreach($user-> roles as $role) {
+			
+			// Als de de rol overeenkomt met Admin verander naar admin
+			if($role->name == 'Admin') {
+				$role->name = "admin"; //functie zoals strtolower kan ook;
+
+				$role->save();
+});
+
+
+*** Deleting Data ***
+
+// In routes.php
+Route::get('/delete', function() {
+
+  // Vind een gebruiker
+  $user = User::findOrFail(1);
+	
+	// Alles verwijderen
+	$user->roles()->delete();
+
+	// Loopen door de rollen
+	foreach($user->roles as $role) {
+
+	// 
+	dd($role);
+
+	// Een specifieke Id verwijderen
+	$role->whereId(eenId)->delete();
+
+});
+
