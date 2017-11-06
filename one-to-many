@@ -1,0 +1,110 @@
+
+*** Setting up Migrations ***
+
+--- php artisan make:model Post -m
+
+// Toevoegen in migratiebestand (posts_table.php)
+$table->string('name'); toevoegen
+
+--- php artisan migrate
+
+// Toevoegen in migratiebestand (address_table.php)
+$table->integer('user_id')->unsigned()->nullable()->index();
+$table->string('title');
+$table->text('body');
+
+// Updaten tabellen
+--- php artisan migrate
+
+
+*** Relaties en Mass assignment ***
+
+// in Model User.php
+public function post() {
+	return $this->hasMany('App\Post');
+}
+
+// In Model Post.php
+// In de class Post
+Protected $fillable = [
+	
+	'title',
+	'body'
+];
+
+
+*** Inserting data *** 
+
+// in routes.php
+Route::get('/create', function() {
+
+});
+
+// Via Terminal een gebruiker aanmaken
+--- php artisan tinker
+--- clear
+App\User::create(['name'=>'test', 'email'=>'support@lpwebdesign.nl', 'password'=>bcrypt("123123")]);
+
+// bCrypt is een functie om wachtwoorden te hashen
+
+// In routes.php
+Route::get('/create', function() {
+
+  // Vind gebruiker
+	$user = User::findOrFail(1);
+
+  // Titel toevoegen aan de post
+	$post = new Post(['title'=>'New post', body'=>'Laravel tekst test']);
+
+  // Omschrijving toevoegen aan de post
+	$user=>posts()=>save(new Post(['title'=>'New post', body'=>'Laravel tekst test']));
+	// or
+	$user=>posts()=>save($post);
+
+
+*** Reading data ***
+
+Route::get('/read', function() {
+
+  // Vind gebruiker
+	$user = User::findOrFail(1);
+  
+  // Dump and Die, om data te displayen
+	// dd($user=>posts);
+  
+  // Loop door de posts data om alles te tonen
+	foreach($user->posts as $post){
+
+	echo $post->title . "<br>";
+
+	}	
+
+});
+
+*** Updating Data ***
+
+Route::get('/update', function() {
+  
+  // Vind gebruiker
+	$user = User::find(1);
+	
+	// Where Id equals one I want to update
+	$user->posts()->whereId(1)->update(['title'=>'Test', 'body'=>'test2']);
+
+}
+
+*** Deleting Data ***
+
+// In routes.php
+Route::get('/delete', function() {
+
+  // Vind gebruiker
+	$user = User::find(1);
+
+	// Delete where ID equals 1
+	$user->posts()->whereId(1)->delete();
+
+	// Delete alles
+	$user->posts()->delete();
+
+}
