@@ -1,0 +1,154 @@
+*** Database Migrations ***
+
+// Migratie tabellen aanmaken
+--- artisan make:model Staff -m
+--- artisan make:model Product -m
+--- artisan make:model Photo -m
+
+
+// In Staff tabel (map: migrations)
+$table->string('name');
+
+// in de Product tabel (map: migrations)
+$table->string('name');
+
+// in de Photo tabel (map: migrations)
+$table->string('path');
+$table->integer('imageable_id');
+$table->string('imageable_type');
+
+--- php artisan migrate
+
+
+*** Relationship en Mass assignemnt ***
+
+// in de model Photo
+// in de Class Photo
+protected $fillable = ['path'];
+
+public function imageable() {
+
+  // MorphTo aanroepen voor de Polymorphic Relatie
+	return $this->MorphTo();
+
+}
+
+// in de model Staff
+// in de Class Staff
+
+protected $fillable = ['name'];
+
+public function photos() {
+
+  // Verkrijg alle fotos van Staff gebruikers
+	return $this->morphMany('App\Photo', 'imageable');
+
+}
+
+// in de model Product
+// in de Class Product
+
+protected $fillable = ['name'];
+
+public function photos() {
+
+  // Verkrijg alle fotos van Producten
+	return $this->morphMany('App\Photo', 'imageable');
+
+}
+
+
+
+*** Inserting Data ***
+
+use App\Staff;
+use App\Photo;
+
+// In routes.php
+Route::get('/create', function() {
+
+	// Vind een staff gebruiker
+	$staff = Staff::find(1);
+  
+	// Voeg een afbeelding en het pad toe aan de staff gebruiker 
+	$staff->photos()->create(['path'=>'example.jpg']);
+
+});
+
+
+*** Reading Data ***
+
+// In routes.php
+Route::get('/read', function() {
+
+	// Vind een staff gebruiker
+	$staff = Staff::findOrFail(1);
+
+	// Toon fotos van alle staff gebruikers
+	foreach($staff->photos as $photo) {
+
+  // Geef het path terug
+		return $photo->path;
+
+	}
+
+});
+
+
+*** Updating Data ***
+
+// in routes.php
+Route::get('update', function() {
+
+	// Vind een staff gebruiker
+	$staff = Staff::findOrFail(1);
+
+  // Vind foto van staff waar id is 1
+	$staff->photos()->whereId(1)->first();
+
+  // Geef het path een andere afbeelding of naam
+	$photo->path = "example.png";
+
+  // Opslaan
+	$photo->save();
+
+}
+
+*** Deleting Data ***
+
+Route::get('/delete', function() {
+
+  // Vind een staff gebruiker
+	$staff = Staff::findOrFail(1);
+
+  // Verwijder de foto van staff waar id = 1
+	$staff->photos()->whereId(1)->delete();
+});
+
+
+*** Extra Techniques ***
+
+// In routes.php
+Route::get('/assign', function() {
+
+	// Vind een staff gebruiker
+	$staff = Staff::findOrFail(1);
+
+  // Vind foto met een id die 2 is
+	$photo = Photo::findOrFail(2);
+
+	// Opslaan van de gevonden foto in de staff gebruiker
+	$staff->photos()->save($photo);
+
+});
+
+
+Route::get('/un-assign', function() {
+
+	// Vind een staff gebruiker
+	$staff = Staff::findOrFail(1);
+
+	// Update de foto van een staff gebruiker met imageid 0 en imagetype leeg.
+	$staff->photos()->whereId(2)->update('[imageable_id'='', 'imageable_type'=>'']);
+
+});
